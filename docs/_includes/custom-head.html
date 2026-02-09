@@ -1,0 +1,89 @@
+<!-- Dark mode stylesheet -->
+<link rel="stylesheet" href="{{ '/assets/css/dark-mode.css' | relative_url }}">
+
+<!-- Apply dark mode immediately to prevent flash of light theme -->
+<script>
+(function () {
+  var stored = localStorage.getItem('calendar-mcp-dark-mode');
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (stored === 'dark' || (!stored && prefersDark)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+</script>
+
+<!-- Dark mode toggle + external link handler (runs after DOM ready) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var STORAGE_KEY = 'calendar-mcp-dark-mode';
+  var html = document.documentElement;
+
+  // Unicode icons
+  var MOON = '\u{1F319}';
+  var SUN  = '\u2600\uFE0F';
+
+  // Create toggle button
+  var toggle = document.createElement('button');
+  toggle.className = 'dark-mode-toggle';
+  toggle.id = 'dark-mode-toggle';
+  toggle.setAttribute('title', 'Toggle dark mode');
+  document.body.appendChild(toggle);
+
+  function setTheme(isDark) {
+    if (isDark) {
+      html.setAttribute('data-theme', 'dark');
+      toggle.textContent = SUN;
+      toggle.setAttribute('aria-label', 'Switch to light mode');
+    } else {
+      html.removeAttribute('data-theme');
+      toggle.textContent = MOON;
+      toggle.setAttribute('aria-label', 'Switch to dark mode');
+    }
+  }
+
+  // Determine initial theme: localStorage > OS preference > light
+  var stored = localStorage.getItem(STORAGE_KEY);
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (stored === 'dark') {
+    setTheme(true);
+  } else if (stored === 'light') {
+    setTheme(false);
+  } else {
+    setTheme(prefersDark);
+  }
+
+  // Toggle on click
+  toggle.addEventListener('click', function () {
+    var isDark = html.getAttribute('data-theme') === 'dark';
+    var newIsDark = !isDark;
+    setTheme(newIsDark);
+    localStorage.setItem(STORAGE_KEY, newIsDark ? 'dark' : 'light');
+  });
+
+  // Listen for OS preference changes (only when no manual choice stored)
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        setTheme(e.matches);
+      }
+    });
+  }
+
+  // Make external links open in new tabs
+  var links = document.querySelectorAll('a[href]');
+  var currentHost = window.location.hostname;
+  for (var i = 0; i < links.length; i++) {
+    var link = links[i];
+    try {
+      var linkHost = new URL(link.href).hostname;
+      if (linkHost && linkHost !== currentHost) {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
+    } catch (e) {
+      // skip malformed URLs
+    }
+  }
+});
+</script>
