@@ -1,15 +1,15 @@
 # Google OAuth 2.0 Setup Guide
 
-Complete walkthrough for setting up Google OAuth 2.0 Desktop credentials. This enables API access to **Google Calendar** and **Gmail** from local tools like MCP servers, scripts, and CLI agents.
+Complete walkthrough for setting up Google OAuth 2.0 Desktop credentials for **Google Calendar** API access from local tools like MCP servers, scripts, and CLI agents.
 
-This is the **canonical OAuth guide** for the calendar-mcp and gmail-mcp projects.
+> **Need Gmail access too?** See the [gmail-mcp setup guide](https://github.com/ldraney/gmail-mcp/blob/main/docs/gmail-api-setup.md) for Gmail-specific OAuth configuration.
 
 ---
 
 ## Table of Contents
 
 1. [Create a Google Cloud Project](#1-create-a-google-cloud-project)
-2. [Enable APIs](#2-enable-apis)
+2. [Enable the Google Calendar API](#2-enable-the-google-calendar-api)
 3. [Configure OAuth Consent Screen](#3-configure-oauth-consent-screen)
 4. [Add Test Users](#4-add-test-users)
 5. [Create OAuth 2.0 Client ID](#5-create-oauth-20-client-id)
@@ -27,7 +27,7 @@ Go to the Google Cloud Console:
 
 > **[Google Cloud - Create Project](https://console.cloud.google.com/projectcreate)**
 
-- **Project name**: Something descriptive like `claude-agent` or `mcp-services`. This project will be shared across calendar-mcp, gmail-mcp, and any other Google API integrations.
+- **Project name**: Something descriptive like `claude-agent` or `mcp-services`. This project can be reused for other Google API integrations.
 - **Organization**: Leave as "No organization" if using a personal Gmail account.
 - **Location**: Leave as default.
 
@@ -39,18 +39,9 @@ After creation, confirm you are working in the correct project by checking the p
 
 ---
 
-## 2. Enable APIs
-
-You need to enable two APIs in your project:
-
-### Google Calendar API
+## 2. Enable the Google Calendar API
 
 1. Go to: **[Google Calendar API Library Page](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com)**
-2. Click **Enable**.
-
-### Gmail API
-
-1. Go to: **[Gmail API Library Page](https://console.cloud.google.com/apis/library/gmail.googleapis.com)**
 2. Click **Enable**.
 
 Alternatively, navigate manually:
@@ -58,13 +49,12 @@ Alternatively, navigate manually:
 1. Open the left sidebar menu (hamburger icon).
 2. Go to **APIs & Services** > **Library**.
 3. Search for "Google Calendar API", click the result, and click **Enable**.
-4. Go back to the Library, search for "Gmail API", click the result, and click **Enable**.
 
-You can verify both are enabled at:
+You can verify it is enabled at:
 
 > **[APIs & Services Dashboard](https://console.cloud.google.com/apis/dashboard)**
 
-Both "Google Calendar API" and "Gmail API" should appear in the list of enabled APIs.
+"Google Calendar API" should appear in the list of enabled APIs.
 
 ---
 
@@ -106,14 +96,13 @@ Click **Save and Continue**.
 
 ### Scopes Screen
 
-Click **Add or Remove Scopes**. In the filter, search for and add the following scopes:
+Click **Add or Remove Scopes**. In the filter, search for and add the following scope:
 
 | Scope | Description |
 |-------|-------------|
 | `https://www.googleapis.com/auth/calendar` | Full access to Google Calendar |
-| `https://www.googleapis.com/auth/gmail.modify` | Read, compose, send, and modify Gmail (all except permanent delete) |
 
-If you do not see them listed, type the full scope URL in the "Manually add scopes" text box at the bottom and click **Add to Table**.
+If you do not see it listed, type the full scope URL in the "Manually add scopes" text box at the bottom and click **Add to Table**.
 
 Click **Update**, then **Save and Continue**.
 
@@ -301,7 +290,7 @@ This will:
 4. Exchange the code for tokens.
 5. Save the token file to `~/secrets/google-oauth/token.json` (chmod 600).
 
-The script requests both Calendar and Gmail scopes in a single flow, so you only need to authorize once for both projects.
+The script requests the Google Calendar scope needed for calendar-mcp.
 
 ### What gets saved
 
@@ -315,8 +304,7 @@ The token file (`~/secrets/google-oauth/token.json`) contains:
   "client_id": "123456789-abcdef.apps.googleusercontent.com",
   "client_secret": "GOCSPX-...",
   "scopes": [
-    "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/gmail.modify"
+    "https://www.googleapis.com/auth/calendar"
   ],
   "expiry": "2024-01-01T12:00:00.000000Z"
 }
@@ -397,7 +385,7 @@ chmod 600 ~/secrets/google-oauth/token.json
 
 ### Centralized credential storage
 
-This project stores credentials in `~/secrets/google-oauth/` rather than inside the project directory. This keeps secrets out of the repo entirely and allows multiple projects (calendar-mcp, gmail-mcp) to share the same credentials.
+This project stores credentials in `~/secrets/google-oauth/` rather than inside the project directory. This keeps secrets out of the repo entirely and allows multiple projects to share the same credentials.
 
 The `~/secrets/` directory is a private Git repo for personal secret management. Never push it to a public remote.
 
@@ -422,22 +410,10 @@ If you believe your tokens have been compromised:
 | `https://www.googleapis.com/auth/calendar.readonly` | Read-only access to Calendar | Not used (we need write) |
 | `https://www.googleapis.com/auth/calendar.events` | Read/write access to events only | Not used (calendar scope covers this) |
 
-### Gmail scopes
-
-| Scope | Access Level | Used By |
-|-------|-------------|---------|
-| `https://www.googleapis.com/auth/gmail.modify` | Read, compose, send, and modify (no permanent delete) | gmail-mcp |
-| `https://www.googleapis.com/auth/gmail.readonly` | Read-only access to Gmail | Not used (we need send/modify) |
-| `https://www.googleapis.com/auth/gmail.send` | Send only | Not used (modify covers this) |
-| `https://www.googleapis.com/auth/gmail.compose` | Compose and send | Not used (modify covers this) |
-
-### Why these specific scopes?
+### Why this scope?
 
 - **`calendar`** (full access): The calendar-mcp server needs to create, read, update, and delete events. The full `calendar` scope is the simplest way to enable all CRUD operations.
-- **`gmail.modify`**: The gmail-mcp server needs to read mail, compose drafts, send messages, and modify labels/read status. The `gmail.modify` scope covers all of these without granting permanent delete permission, which is the principle of least privilege for our use case.
 
-### Requesting both at once
+### Adding more scopes later
 
-The `get-refresh-token.py` script requests both scopes in a single authorization flow. The user only needs to consent once, and the resulting token works for both Calendar and Gmail API calls.
-
-If you later need to add more scopes, you must re-authorize: delete `token.json`, add the new scope to the script, and run it again. Google does not support incremental scope addition for Desktop app credentials through the standard library flow.
+If you later need to add more scopes (e.g., for Gmail), you must re-authorize: delete `token.json`, add the new scope to the script, and run it again. Google does not support incremental scope addition for Desktop app credentials through the standard library flow.
