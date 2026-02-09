@@ -3,7 +3,7 @@
 Google OAuth 2.0 token exchange for Desktop app credentials.
 
 This script performs the one-time OAuth flow to obtain a refresh token
-for Google Calendar API and Gmail API access.
+for Google Calendar API access.
 
 Prerequisites:
     pip install google-auth-oauthlib
@@ -35,11 +35,9 @@ except ImportError:
     print("Install it with: pip install google-auth-oauthlib")
     sys.exit(1)
 
-# Scopes for both Calendar and Gmail access.
-# Requesting both in one flow so the user only authorizes once.
+# Scopes for Google Calendar access.
 SCOPES = [
     "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/gmail.modify",
 ]
 
 DEFAULT_CREDENTIALS_PATH = os.path.expanduser(
@@ -51,7 +49,7 @@ DEFAULT_PORT = 8080
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Obtain Google OAuth 2.0 refresh token for Calendar and Gmail APIs."
+        description="Obtain Google OAuth 2.0 refresh token for Google Calendar API."
     )
     parser.add_argument(
         "--credentials",
