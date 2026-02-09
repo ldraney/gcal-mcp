@@ -25,7 +25,7 @@ This is the **canonical OAuth guide** for the calendar-mcp and gmail-mcp project
 
 Go to the Google Cloud Console:
 
-> **https://console.cloud.google.com/projectcreate**
+> **[Google Cloud - Create Project](https://console.cloud.google.com/projectcreate)**
 
 - **Project name**: Something descriptive like `claude-agent` or `mcp-services`. This project will be shared across calendar-mcp, gmail-mcp, and any other Google API integrations.
 - **Organization**: Leave as "No organization" if using a personal Gmail account.
@@ -45,12 +45,12 @@ You need to enable two APIs in your project:
 
 ### Google Calendar API
 
-1. Go to: **https://console.cloud.google.com/apis/library/calendar-json.googleapis.com**
+1. Go to: **[Google Calendar API Library Page](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com)**
 2. Click **Enable**.
 
 ### Gmail API
 
-1. Go to: **https://console.cloud.google.com/apis/library/gmail.googleapis.com**
+1. Go to: **[Gmail API Library Page](https://console.cloud.google.com/apis/library/gmail.googleapis.com)**
 2. Click **Enable**.
 
 Alternatively, navigate manually:
@@ -62,7 +62,7 @@ Alternatively, navigate manually:
 
 You can verify both are enabled at:
 
-> **https://console.cloud.google.com/apis/dashboard**
+> **[APIs & Services Dashboard](https://console.cloud.google.com/apis/dashboard)**
 
 Both "Google Calendar API" and "Gmail API" should appear in the list of enabled APIs.
 
@@ -72,7 +72,7 @@ Both "Google Calendar API" and "Gmail API" should appear in the list of enabled 
 
 Navigate to:
 
-> **https://console.cloud.google.com/apis/credentials/consent**
+> **[OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)**
 
 If prompted to choose a user type:
 
@@ -133,7 +133,7 @@ While your app is in "Testing" publishing status (the default), only explicitly 
 
 Navigate to:
 
-> **https://console.cloud.google.com/apis/credentials/consent**
+> **[OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)**
 
 Click **Edit App** if needed, then navigate to the **Test users** section (or the "OAuth consent screen" page and look for the "Test users" panel).
 
@@ -157,7 +157,7 @@ Click **Save**.
 
 Navigate to:
 
-> **https://console.cloud.google.com/apis/credentials**
+> **[Credentials Page](https://console.cloud.google.com/apis/credentials)**
 
 Click **+ Create Credentials** at the top, then select **OAuth client ID**.
 
@@ -270,7 +270,7 @@ Google OAuth 2.0 for Desktop apps uses the **Authorization Code Flow with a loca
 ### Refresh token lifecycle
 
 - Google only returns the refresh token on the **first** authorization, or when you explicitly request it with `access_type=offline` and `prompt=consent`.
-- If you lose the refresh token, you must re-authorize (revoke access at https://myaccount.google.com/permissions, then run the auth flow again).
+- If you lose the refresh token, you must re-authorize (revoke access at [Google Account Permissions](https://myaccount.google.com/permissions), then run the auth flow again).
 - In test mode, refresh tokens expire after **7 days**. Publish your app to get long-lived refresh tokens.
 
 ---
@@ -405,7 +405,7 @@ The `~/secrets/` directory is a private Git repo for personal secret management.
 
 If you believe your tokens have been compromised:
 
-1. Go to https://myaccount.google.com/permissions
+1. Go to [Google Account Permissions](https://myaccount.google.com/permissions)
 2. Find your app name (e.g., "Claude Agent") and click **Remove Access**.
 3. Delete `~/secrets/google-oauth/token.json`.
 4. Re-run the auth flow with `scripts/get-refresh-token.py`.
