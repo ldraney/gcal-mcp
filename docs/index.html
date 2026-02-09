@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>calendar-mcp Documentation</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- Prevent flash of wrong theme -->
+  <script>
+  (function () {
+    var stored = localStorage.getItem('calendar-mcp-dark-mode');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (stored === 'dark' || (!stored && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <h1><a href="./">calendar-mcp</a></h1>
+    <nav>
+      <a href="https://github.com/ldraney/calendar-mcp">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>calendar-mcp Documentation</h1>
+    <p>
+      Documentation for <strong>calendar-mcp</strong> &mdash; a Google Calendar
+      <a href="https://modelcontextprotocol.io/">MCP</a> server that lets
+      AI assistants read and manage your Google Calendar.
+    </p>
+
+    <h2>Guides</h2>
+    <ul class="card-list">
+      <li>
+        <a href="google-oauth-setup.html">
+          <div class="card-title">Google OAuth 2.0 Setup Guide</div>
+          <div class="card-desc">
+            Complete walkthrough for creating a Google Cloud project, enabling the Calendar API,
+            configuring OAuth consent, and obtaining refresh tokens for local tools.
+          </div>
+        </a>
+      </li>
+    </ul>
+
+    <h2>Quick Links</h2>
+    <ul>
+      <li><a href="https://github.com/ldraney/calendar-mcp">Source code on GitHub</a></li>
+      <li><a href="https://github.com/ldraney/calendar-mcp/issues">Issues &amp; feature requests</a></li>
+      <li><a href="https://modelcontextprotocol.io/">Model Context Protocol (MCP) specification</a></li>
+    </ul>
+  </main>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

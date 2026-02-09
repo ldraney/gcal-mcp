@@ -1,28 +1,15 @@
-<!-- Dark mode stylesheet -->
-<link rel="stylesheet" href="{{ '/assets/css/dark-mode.css' | relative_url }}">
-
-<!-- Apply dark mode immediately to prevent flash of light theme -->
-<script>
+/* calendar-mcp docs — shared JavaScript */
 (function () {
-  var stored = localStorage.getItem('calendar-mcp-dark-mode');
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (stored === 'dark' || (!stored && prefersDark)) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
-</script>
+  'use strict';
 
-<!-- Dark mode toggle + external link handler (runs after DOM ready) -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
   var STORAGE_KEY = 'calendar-mcp-dark-mode';
   var html = document.documentElement;
 
   // Unicode icons
-  var MOON = '\u{1F319}';
-  var SUN  = '\u2600\uFE0F';
+  var MOON = '\u{1F319}';  // crescent moon
+  var SUN  = '\u2600\uFE0F'; // sun
 
-  // Create toggle button
+  // ---- Dark-mode toggle ----
   var toggle = document.createElement('button');
   toggle.className = 'dark-mode-toggle';
   toggle.id = 'dark-mode-toggle';
@@ -70,14 +57,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Make external links open in new tabs
+  // ---- External links open in new tabs ----
   var links = document.querySelectorAll('a[href]');
   var currentHost = window.location.hostname;
   for (var i = 0; i < links.length; i++) {
     var link = links[i];
     try {
-      var linkHost = new URL(link.href).hostname;
-      if (linkHost && linkHost !== currentHost) {
+      var url = new URL(link.href, window.location.href);
+      if (url.hostname && url.hostname !== currentHost && url.protocol.indexOf('http') === 0) {
         link.setAttribute('target', '_blank');
         link.setAttribute('rel', 'noopener noreferrer');
       }
@@ -85,5 +72,4 @@ document.addEventListener('DOMContentLoaded', function () {
       // skip malformed URLs
     }
   }
-});
-</script>
+})();

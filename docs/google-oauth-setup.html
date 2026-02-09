@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google OAuth 2.0 Setup Guide - calendar-mcp</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- Prevent flash of wrong theme -->
+  <script>
+  (function () {
+    var stored = localStorage.getItem('calendar-mcp-dark-mode');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (stored === 'dark' || (!stored && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <h1><a href="./">calendar-mcp</a></h1>
+    <nav>
+      <a href="./">Docs</a>
+      <a href="https://github.com/ldraney/calendar-mcp">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <h1>Google OAuth 2.0 Setup Guide</h1>
+
+    <p>
+      Complete walkthrough for setting up Google OAuth 2.0 Desktop credentials for
+      <strong>Google Calendar</strong> API access from local tools like MCP servers,
+      scripts, and CLI agents.
+    </p>
+
+    <blockquote>
+      <p>
+        <strong>Need Gmail access too?</strong> See the
+        <a href="https://github.com/ldraney/gmail-mcp/blob/main/docs/gmail-api-setup.md">gmail-mcp setup guide</a>
+        for Gmail-specific OAuth configuration.
+      </p>
+    </blockquote>
+
+    <hr>
+
+    <h2 id="table-of-contents">Table of Contents</h2>
+
+    <ol>
+      <li><a href="#1-create-a-google-cloud-project">Create a Google Cloud Project</a></li>
+      <li><a href="#2-enable-the-google-calendar-api">Enable the Google Calendar API</a></li>
+      <li><a href="#3-configure-oauth-consent-screen">Configure OAuth Consent Screen</a></li>
+      <li><a href="#4-add-test-users">Add Test Users</a></li>
+      <li><a href="#5-create-oauth-20-client-id">Create OAuth 2.0 Client ID</a></li>
+      <li><a href="#6-download-credentialsjson">Download credentials.json</a></li>
+      <li><a href="#7-understand-the-auth-flow">Understand the Auth Flow</a></li>
+      <li><a href="#8-first-token-exchange">First Token Exchange</a></li>
+      <li><a href="#9-security-notes">Security Notes</a></li>
+      <li><a href="#10-scopes-reference">Scopes Reference</a></li>
+    </ol>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="1-create-a-google-cloud-project">1. Create a Google Cloud Project</h2>
+
+    <p>Go to the Google Cloud Console:</p>
+
+    <blockquote>
+      <p><strong><a href="https://console.cloud.google.com/projectcreate">Google Cloud - Create Project</a></strong></p>
+    </blockquote>
+
+    <ul>
+      <li><strong>Project name</strong>: Something descriptive like <code>claude-agent</code> or <code>mcp-services</code>. This project can be reused for other Google API integrations.</li>
+      <li><strong>Organization</strong>: Leave as "No organization" if using a personal Gmail account.</li>
+      <li><strong>Location</strong>: Leave as default.</li>
+    </ul>
+
+    <p>Click <strong>Create</strong>.</p>
+
+    <p>
+      If you already have a project you want to reuse, select it from the project dropdown at the top
+      of the Console. Just make sure you enable the required APIs (next step) in that project.
+    </p>
+
+    <p>
+      After creation, confirm you are working in the correct project by checking the project name in
+      the top navigation bar.
+    </p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="2-enable-the-google-calendar-api">2. Enable the Google Calendar API</h2>
+
+    <ol>
+      <li>Go to: <strong><a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com">Google Calendar API Library Page</a></strong></li>
+      <li>Click <strong>Enable</strong>.</li>
+    </ol>
+
+    <p>Alternatively, navigate manually:</p>
+
+    <ol>
+      <li>Open the left sidebar menu (hamburger icon).</li>
+      <li>Go to <strong>APIs &amp; Services</strong> &gt; <strong>Library</strong>.</li>
+      <li>Search for "Google Calendar API", click the result, and click <strong>Enable</strong>.</li>
+    </ol>
+
+    <p>You can verify it is enabled at:</p>
+
+    <blockquote>
+      <p><strong><a href="https://console.cloud.google.com/apis/dashboard">APIs &amp; Services Dashboard</a></strong></p>
+    </blockquote>
+
+    <p>"Google Calendar API" should appear in the list of enabled APIs.</p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="3-configure-oauth-consent-screen">3. Configure OAuth Consent Screen</h2>
+
+    <p>Navigate to:</p>
+
+    <blockquote>
+      <p><strong><a href="https://console.cloud.google.com/apis/credentials/consent">OAuth Consent Screen</a></strong></p>
+    </blockquote>
+
+    <p>If prompted to choose a user type:</p>
+
+    <ul>
+      <li>Select <strong>External</strong> (this works for personal Gmail accounts and allows you to add specific test users).</li>
+      <li>Click <strong>Create</strong>.</li>
+    </ul>
+
+    <p>Fill in the consent screen form:</p>
+
+    <h3>App Information</h3>
+
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>App name</strong></td>
+          <td><code>Claude Agent</code> (or whatever you prefer -- users will see this during consent)</td>
+        </tr>
+        <tr>
+          <td><strong>User support email</strong></td>
+          <td>Select your email from the dropdown</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>App Domain</h3>
+
+    <p>Leave all fields blank (App homepage, Privacy policy, Terms of service). These are optional and not needed for a Desktop app in test mode.</p>
+
+    <h3>Authorized Domains</h3>
+
+    <p>Leave blank. Not needed for Desktop app credentials.</p>
+
+    <h3>Developer Contact Information</h3>
+
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Email addresses</strong></td>
+          <td>Enter your email address</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Click <strong>Save and Continue</strong>.</p>
+
+    <h3>Scopes Screen</h3>
+
+    <p>Click <strong>Add or Remove Scopes</strong>. In the filter, search for and add the following scope:</p>
+
+    <table>
+      <thead>
+        <tr><th>Scope</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>https://www.googleapis.com/auth/calendar</code></td>
+          <td>Full access to Google Calendar</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      If you do not see it listed, type the full scope URL in the "Manually add scopes" text box
+      at the bottom and click <strong>Add to Table</strong>.
+    </p>
+
+    <p>Click <strong>Update</strong>, then <strong>Save and Continue</strong>.</p>
+
+    <h3>Test Users Screen</h3>
+
+    <p>Skip this for now (we will add test users in the next step). Click <strong>Save and Continue</strong>.</p>
+
+    <h3>Summary</h3>
+
+    <p>Review the summary and click <strong>Back to Dashboard</strong>.</p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="4-add-test-users">4. Add Test Users</h2>
+
+    <p>
+      While your app is in "Testing" publishing status (the default), only explicitly listed test users
+      can complete the OAuth flow. Anyone not on the list will see an error.
+    </p>
+
+    <p>Navigate to:</p>
+
+    <blockquote>
+      <p><strong><a href="https://console.cloud.google.com/apis/credentials/consent">OAuth Consent Screen</a></strong></p>
+    </blockquote>
+
+    <p>
+      Click <strong>Edit App</strong> if needed, then navigate to the <strong>Test users</strong> section
+      (or the "OAuth consent screen" page and look for the "Test users" panel).
+    </p>
+
+    <p>
+      Alternatively, on the OAuth consent screen page, scroll down to the <strong>Test users</strong>
+      section and click <strong>Add Users</strong>.
+    </p>
+
+    <p>Add the following email addresses:</p>
+
+    <pre><code>draneylucas@gmail.com
+lucastoddraney@gmail.com
+devopsphilosopher@gmail.com</code></pre>
+
+    <p>Click <strong>Save</strong>.</p>
+
+    <p>
+      <strong>Important</strong>: Test mode has a limit of 100 test users. Tokens issued in test mode
+      expire after 7 days, so you will need to re-authenticate periodically (unless you publish the app,
+      which requires verification).
+    </p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="5-create-oauth-20-client-id">5. Create OAuth 2.0 Client ID</h2>
+
+    <p>Navigate to:</p>
+
+    <blockquote>
+      <p><strong><a href="https://console.cloud.google.com/apis/credentials">Credentials Page</a></strong></p>
+    </blockquote>
+
+    <p>Click <strong>+ Create Credentials</strong> at the top, then select <strong>OAuth client ID</strong>.</p>
+
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Application type</strong></td>
+          <td><strong>Desktop app</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Name</strong></td>
+          <td><code>calendar-mcp</code> (or any descriptive name)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Click <strong>Create</strong>.</p>
+
+    <h3>Why "Desktop app"?</h3>
+
+    <p>
+      Desktop app credentials use a localhost redirect URI (<code>http://localhost:PORT</code>) for
+      the OAuth callback. This means:
+    </p>
+
+    <ul>
+      <li>No hosted web server or public URL is needed.</li>
+      <li>
+        The auth flow opens a browser on your local machine, you consent, and the browser redirects
+        back to <code>localhost</code> where a temporary local server captures the authorization code.
+      </li>
+      <li>This is the correct choice for CLI tools, local scripts, and MCP servers running on your machine.</li>
+    </ul>
+
+    <p>
+      A dialog will appear showing your <strong>Client ID</strong> and <strong>Client Secret</strong>.
+      You do not need to copy these manually -- download the JSON file instead (next step).
+    </p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="6-download-credentialsjson">6. Download credentials.json</h2>
+
+    <p>
+      In the dialog that appeared after creating the client ID (or from the Credentials page by clicking
+      the download icon next to your client):
+    </p>
+
+    <ol>
+      <li>Click <strong>Download JSON</strong>.</li>
+      <li>Save the file and move it to the canonical location:</li>
+    </ol>
+
+    <pre><code># Create the directory
+mkdir -p ~/secrets/google-oauth
+
+# Move the downloaded file (adjust the source path to your Downloads folder)
+mv ~/Downloads/client_secret_*.json ~/secrets/google-oauth/credentials.json
+
+# Lock down permissions
+chmod 700 ~/secrets/google-oauth
+chmod 600 ~/secrets/google-oauth/credentials.json</code></pre>
+
+    <p>The file will look something like this:</p>
+
+    <pre><code>{
+  "installed": {
+    "client_id": "123456789-abcdef.apps.googleusercontent.com",
+    "project_id": "your-project-id",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "GOCSPX-...",
+    "redirect_uris": ["http://localhost"]
+  }
+}</code></pre>
+
+    <p>
+      Note the top-level key is <code>"installed"</code> -- this indicates Desktop app credentials
+      (as opposed to <code>"web"</code> for web app credentials).
+    </p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="7-understand-the-auth-flow">7. Understand the Auth Flow</h2>
+
+    <p>
+      Google OAuth 2.0 for Desktop apps uses the <strong>Authorization Code Flow with a localhost
+      redirect</strong>. Here is how it works:
+    </p>
+
+    <pre class="diagram"><code>┌─────────┐         ┌─────────────┐         ┌──────────────┐
+│  Your    │         │   Google    │         │   Google     │
+│  Script  │         │   Auth      │         │   API        │
+└────┬─────┘         └──────┬──────┘         └──────┬───────┘
+     │                      │                       │
+     │  1. Start local HTTP │                       │
+     │     server on        │                       │
+     │     localhost:PORT   │                       │
+     │                      │                       │
+     │  2. Open browser to  │                       │
+     │     Google auth URL  │                       │
+     │ ──────────────────&gt;  │                       │
+     │                      │                       │
+     │     3. User consents │                       │
+     │        in browser    │                       │
+     │                      │                       │
+     │  4. Google redirects │                       │
+     │     to localhost     │                       │
+     │     with auth code   │                       │
+     │ &lt;──────────────────  │                       │
+     │                      │                       │
+     │  5. Exchange auth    │                       │
+     │     code for tokens  │                       │
+     │ ──────────────────&gt;  │                       │
+     │                      │                       │
+     │  6. Receive:         │                       │
+     │     - access_token   │                       │
+     │     - refresh_token  │                       │
+     │ &lt;──────────────────  │                       │
+     │                      │                       │
+     │  7. Use access_token │                       │
+     │     to call APIs     │                       │
+     │ ───────────────────────────────────────&gt;   │
+     │                      │                       │</code></pre>
+
+    <h3>Key concepts</h3>
+
+    <ul>
+      <li><strong>Authorization code</strong>: A one-time code returned after the user consents. Exchanged for tokens.</li>
+      <li><strong>Access token</strong>: Short-lived (1 hour). Used in API requests as a Bearer token.</li>
+      <li><strong>Refresh token</strong>: Long-lived. Used to get new access tokens without user interaction. This is the token you store.</li>
+      <li><strong>Why you only do this once</strong>: After the first auth flow, you store the refresh token. Your application uses it to silently obtain new access tokens whenever the old one expires. No browser interaction is needed again (unless the refresh token is revoked or expires in test mode after 7 days).</li>
+    </ul>
+
+    <h3>Refresh token lifecycle</h3>
+
+    <ul>
+      <li>Google only returns the refresh token on the <strong>first</strong> authorization, or when you explicitly request it with <code>access_type=offline</code> and <code>prompt=consent</code>.</li>
+      <li>If you lose the refresh token, you must re-authorize (revoke access at <a href="https://myaccount.google.com/permissions">Google Account Permissions</a>, then run the auth flow again).</li>
+      <li>In test mode, refresh tokens expire after <strong>7 days</strong>. Publish your app to get long-lived refresh tokens.</li>
+    </ul>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="8-first-token-exchange">8. First Token Exchange</h2>
+
+    <p>Use the provided helper script to complete the OAuth flow and obtain your refresh token.</p>
+
+    <h3>Prerequisites</h3>
+
+    <p>Install the Google auth library:</p>
+
+    <pre><code>pip install google-auth-oauthlib</code></pre>
+
+    <h3>Run the script</h3>
+
+    <pre><code>python scripts/get-refresh-token.py</code></pre>
+
+    <p>This will:</p>
+
+    <ol>
+      <li>Read your <code>~/secrets/google-oauth/credentials.json</code> file.</li>
+      <li>Open your default browser to Google's consent page.</li>
+      <li>After you consent, capture the authorization code via localhost redirect.</li>
+      <li>Exchange the code for tokens.</li>
+      <li>Save the token file to <code>~/secrets/google-oauth/token.json</code> (chmod 600).</li>
+    </ol>
+
+    <p>The script requests the Google Calendar scope needed for calendar-mcp.</p>
+
+    <h3>What gets saved</h3>
+
+    <p>The token file (<code>~/secrets/google-oauth/token.json</code>) contains:</p>
+
+    <pre><code>{
+  "token": "ya29.a0AfH6SM...",
+  "refresh_token": "1//0dx...",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "client_id": "123456789-abcdef.apps.googleusercontent.com",
+  "client_secret": "GOCSPX-...",
+  "scopes": [
+    "https://www.googleapis.com/auth/calendar"
+  ],
+  "expiry": "2024-01-01T12:00:00.000000Z"
+}</code></pre>
+
+    <p>
+      The <code>refresh_token</code> field is what matters. The <code>token</code> (access token) will
+      be refreshed automatically by the Google client libraries.
+    </p>
+
+    <h3>Verify it worked</h3>
+
+    <p>Quick test to list your next 5 calendar events:</p>
+
+    <pre><code>python -c "
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+import json, os
+
+token_path = os.path.expanduser('~/secrets/google-oauth/token.json')
+with open(token_path) as f:
+    token_data = json.load(f)
+
+creds = Credentials.from_authorized_user_info(token_data)
+service = build('calendar', 'v3', credentials=creds)
+
+from datetime import datetime, timezone
+now = datetime.now(timezone.utc).isoformat()
+events = service.events().list(calendarId='primary', timeMin=now, maxResults=5, singleEvents=True, orderBy='startTime').execute()
+
+for event in events.get('items', []):
+    start = event['start'].get('dateTime', event['start'].get('date'))
+    print(f'{start}: {event[\"summary\"]}')
+"</code></pre>
+
+    <p>If you see your upcoming events, everything is working.</p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="9-security-notes">9. Security Notes</h2>
+
+    <h3>What to NEVER commit</h3>
+
+    <p>The following files contain secrets and must <strong>never</strong> be checked into version control:</p>
+
+    <ul>
+      <li><code>credentials.json</code> -- contains your client ID and client secret</li>
+      <li><code>token.json</code> -- contains your access token and refresh token</li>
+      <li>Any <code>.env</code> file with OAuth values</li>
+    </ul>
+
+    <h3>.gitignore patterns</h3>
+
+    <p>Every project using these credentials should include these patterns in <code>.gitignore</code>:</p>
+
+    <pre><code># Google OAuth secrets
+credentials.json
+token.json
+client_secret_*.json
+
+# Environment files
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc</code></pre>
+
+    <h3>File permissions</h3>
+
+    <pre><code># Directory
+chmod 700 ~/secrets/google-oauth/
+
+# Credential files
+chmod 600 ~/secrets/google-oauth/credentials.json
+chmod 600 ~/secrets/google-oauth/token.json</code></pre>
+
+    <h3>Centralized credential storage</h3>
+
+    <p>
+      This project stores credentials in <code>~/secrets/google-oauth/</code> rather than inside the project
+      directory. This keeps secrets out of the repo entirely and allows multiple projects to share the same
+      credentials.
+    </p>
+
+    <p>
+      The <code>~/secrets/</code> directory is a private Git repo for personal secret management. Never
+      push it to a public remote.
+    </p>
+
+    <h3>Token revocation</h3>
+
+    <p>If you believe your tokens have been compromised:</p>
+
+    <ol>
+      <li>Go to <a href="https://myaccount.google.com/permissions">Google Account Permissions</a></li>
+      <li>Find your app name (e.g., "Claude Agent") and click <strong>Remove Access</strong>.</li>
+      <li>Delete <code>~/secrets/google-oauth/token.json</code>.</li>
+      <li>Re-run the auth flow with <code>scripts/get-refresh-token.py</code>.</li>
+    </ol>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <h2 id="10-scopes-reference">10. Scopes Reference</h2>
+
+    <h3>Calendar scopes</h3>
+
+    <table>
+      <thead>
+        <tr><th>Scope</th><th>Access Level</th><th>Used By</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>https://www.googleapis.com/auth/calendar</code></td>
+          <td>Full read/write access to Calendar</td>
+          <td>calendar-mcp</td>
+        </tr>
+        <tr>
+          <td><code>https://www.googleapis.com/auth/calendar.readonly</code></td>
+          <td>Read-only access to Calendar</td>
+          <td>Not used (we need write)</td>
+        </tr>
+        <tr>
+          <td><code>https://www.googleapis.com/auth/calendar.events</code></td>
+          <td>Read/write access to events only</td>
+          <td>Not used (calendar scope covers this)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Why this scope?</h3>
+
+    <ul>
+      <li>
+        <strong><code>calendar</code></strong> (full access): The calendar-mcp server needs to create,
+        read, update, and delete events. The full <code>calendar</code> scope is the simplest way to
+        enable all CRUD operations.
+      </li>
+    </ul>
+
+    <h3>Adding more scopes later</h3>
+
+    <p>
+      If you later need to add more scopes (e.g., for Gmail), you must re-authorize: delete
+      <code>token.json</code>, add the new scope to the script, and run it again. Google does not
+      support incremental scope addition for Desktop app credentials through the standard library flow.
+    </p>
+
+  </main>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
