@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>calendar-mcp — Documentation</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+      background: #fff;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── Typography ───────────────────────────────────── */
+    h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+    h2 { font-size: 1.4rem; margin: 2rem 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.4rem; }
+    p { margin: 0.8rem 0; }
+    a { color: #0366d6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Guide list ───────────────────────────────────── */
+    .guide-list { list-style: none; padding: 0; }
+    .guide-list li { margin: 0.8rem 0; }
+    .guide-list a {
+      display: inline-block;
+      padding: 0.6rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .guide-list a:hover { background: #f6f8fa; border-color: #bbb; text-decoration: none; }
+
+    /* ── Footer ───────────────────────────────────────── */
+    .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.85rem; color: #666; }
+    .footer a { color: #555; }
+
+    /* ── Dark-mode toggle button ──────────────────────── */
+    .dark-mode-toggle {
+      position: fixed; top: 1rem; right: 1rem; z-index: 9999;
+      background: #e0e0e0; border: 1px solid #ccc; border-radius: 50%;
+      width: 2.4rem; height: 2.4rem; font-size: 1.3rem; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+      color: #333; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .dark-mode-toggle:hover { background: #d0d0d0; }
+
+    /* ── Dark theme ───────────────────────────────────── */
+    [data-theme="dark"] body { background: #1a1a2e; color: #e0e0e0; }
+    [data-theme="dark"] h1,
+    [data-theme="dark"] h2 { color: #f0f0f0; }
+    [data-theme="dark"] h2 { border-bottom-color: #333; }
+    [data-theme="dark"] a { color: #6db3f2; }
+    [data-theme="dark"] a:visited { color: #9b8ec4; }
+    [data-theme="dark"] a:hover { color: #90cdf4; }
+    [data-theme="dark"] .guide-list a { border-color: #444; }
+    [data-theme="dark"] .guide-list a:hover { background: #22223a; border-color: #666; }
+    [data-theme="dark"] .footer { border-top-color: #333; color: #888; }
+    [data-theme="dark"] .footer a { color: #999; }
+    [data-theme="dark"] .dark-mode-toggle { background: #2a2a3e; border-color: #555; color: #f0c040; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+    [data-theme="dark"] .dark-mode-toggle:hover { background: #3a3a50; }
+
+    /* ── Transitions ──────────────────────────────────── */
+    body, a, h1, h2, .guide-list a, .footer {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+  </style>
+  <script>
+    // Apply dark mode before paint to prevent flash
+    (function () {
+      var stored = localStorage.getItem('calendar-mcp-dark-mode');
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>calendar-mcp</h1>
+    <p>Google Calendar MCP server — documentation and setup guides.</p>
+
+    <h2>Guides</h2>
+    <ul class="guide-list">
+      <li><a href="google-oauth-setup.html">Google OAuth 2.0 Setup Guide</a></li>
+    </ul>
+
+    <h2>Source</h2>
+    <p>View the project on <a href="https://github.com/ldraney/calendar-mcp">GitHub</a>.</p>
+
+    <div class="footer">
+      <p>calendar-mcp docs &middot; <a href="https://github.com/ldraney/calendar-mcp">GitHub</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var STORAGE_KEY = 'calendar-mcp-dark-mode';
+      var html = document.documentElement;
+      var MOON = '\u{1F319}';
+      var SUN  = '\u2600\uFE0F';
+
+      var toggle = document.createElement('button');
+      toggle.className = 'dark-mode-toggle';
+      toggle.setAttribute('title', 'Toggle dark mode');
+      document.body.appendChild(toggle);
+
+      function setTheme(isDark) {
+        if (isDark) {
+          html.setAttribute('data-theme', 'dark');
+          toggle.textContent = SUN;
+          toggle.setAttribute('aria-label', 'Switch to light mode');
+        } else {
+          html.removeAttribute('data-theme');
+          toggle.textContent = MOON;
+          toggle.setAttribute('aria-label', 'Switch to dark mode');
+        }
+      }
+
+      var stored = localStorage.getItem(STORAGE_KEY);
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark') setTheme(true);
+      else if (stored === 'light') setTheme(false);
+      else setTheme(prefersDark);
+
+      toggle.addEventListener('click', function () {
+        var isDark = html.getAttribute('data-theme') === 'dark';
+        setTheme(!isDark);
+        localStorage.setItem(STORAGE_KEY, !isDark ? 'dark' : 'light');
+      });
+
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+          if (!localStorage.getItem(STORAGE_KEY)) setTheme(e.matches);
+        });
+      }
+
+      // External links → new tab
+      var links = document.querySelectorAll('a[href]');
+      var currentHost = window.location.hostname;
+      for (var i = 0; i < links.length; i++) {
+        try {
+          var linkHost = new URL(links[i].href).hostname;
+          if (linkHost && linkHost !== currentHost) {
+            links[i].setAttribute('target', '_blank');
+            links[i].setAttribute('rel', 'noopener noreferrer');
+          }
+        } catch (e) {}
+      }
+    });
+  </script>
+</body>
+</html>
