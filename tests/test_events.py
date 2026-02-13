@@ -65,6 +65,8 @@ class TestListEvents:
             q=None,
             single_events=True,
             order_by="startTime",
+            show_deleted=False,
+            page_token=None,
         )
 
     def test_list_events_with_time_range(self, mock_client):
@@ -98,6 +100,8 @@ class TestListEvents:
             q="meeting",
             single_events=True,
             order_by="startTime",
+            show_deleted=False,
+            page_token=None,
         )
 
 

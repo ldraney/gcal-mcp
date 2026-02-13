@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -50,12 +51,24 @@ def _error_response(exc: Exception) -> str:
     return json.dumps({"error": True, "message": str(exc)}, indent=2)
 
 
+def _parse_datetime(value: str | None, *, required: bool = False) -> datetime | None:
+    """Parse an ISO 8601 datetime string, assuming UTC if no timezone."""
+    if value is None:
+        if required:
+            raise ValueError("datetime value is required")
+        return None
+    dt = datetime.fromisoformat(value)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
 # ---------------------------------------------------------------------------
 # Response slimming -- strip Calendar API noise to reduce token usage
 # ---------------------------------------------------------------------------
 
 # Keys that are always API machinery noise
-_ALWAYS_STRIP_KEYS = {"etag", "kind"}
+_ALWAYS_STRIP_KEYS = {"etag", "kind", "conferenceProperties"}
 
 
 def _slim_response(data: Any) -> Any:
@@ -96,10 +109,6 @@ def _slim_response(data: Any) -> Any:
 
         # --- Strip sequence when 0 ---
         if key == "sequence" and value == 0:
-            continue
-
-        # --- Strip colorId when not meaningfully set ---
-        if key == "colorId" and value is None:
             continue
 
         # --- Recurse into nested structures ---

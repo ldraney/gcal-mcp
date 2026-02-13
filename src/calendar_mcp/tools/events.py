@@ -3,25 +3,11 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from typing import Annotated, Any
 
 from pydantic import Field
 
-from ..server import mcp, get_client, _parse_json, _error_response, _slim_response
-
-
-def _parse_datetime(value: str | None) -> datetime | None:
-    """Parse an ISO 8601 datetime string into a timezone-aware datetime.
-
-    If the string has no timezone info, UTC is assumed.
-    """
-    if value is None:
-        return None
-    dt = datetime.fromisoformat(value)
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt
+from ..server import mcp, get_client, _parse_json, _error_response, _slim_response, _parse_datetime
 
 
 @mcp.tool()
@@ -33,6 +19,8 @@ def list_events(
     q: Annotated[str | None, Field(description="Free-text search query")] = None,
     single_events: Annotated[bool, Field(description="Expand recurring events into instances")] = True,
     order_by: Annotated[str | None, Field(description="Sort order: 'startTime' or 'updated'")] = "startTime",
+    show_deleted: Annotated[bool, Field(description="Whether to include deleted events (status='cancelled')")] = False,
+    page_token: Annotated[str | None, Field(description="Token for fetching the next page of results")] = None,
 ) -> str:
     """List events from a Google Calendar.
 
@@ -49,6 +37,8 @@ def list_events(
             q=q,
             single_events=single_events,
             order_by=order_by,
+            show_deleted=show_deleted,
+            page_token=page_token,
         )
         data = [e.model_dump(by_alias=True) for e in events]
         return json.dumps(_slim_response(data), indent=2, default=str)
@@ -84,6 +74,7 @@ def create_event(
     location: Annotated[str | None, Field(description="Event location")] = None,
     attendees: Annotated[str | list | None, Field(description="Attendees as JSON array of email strings or attendee objects")] = None,
     time_zone: Annotated[str | None, Field(description="Time zone (e.g. 'America/Denver')")] = None,
+    recurrence: Annotated[str | list | None, Field(description="Recurrence rules as JSON array of RRULE strings, e.g. [\"RRULE:FREQ=WEEKLY;COUNT=10\"]")] = None,
 ) -> str:
     """Create a new event on a Google Calendar.
 
@@ -93,6 +84,7 @@ def create_event(
     try:
         client = get_client()
         parsed_attendees = _parse_json(attendees, "attendees") if attendees is not None else None
+        parsed_recurrence = _parse_json(recurrence, "recurrence") if recurrence is not None else None
         event = client.events.create(
             calendar_id,
             summary=summary,
@@ -102,6 +94,7 @@ def create_event(
             end=_parse_datetime(end),
             attendees=parsed_attendees,
             time_zone=time_zone,
+            recurrence=parsed_recurrence,
         )
         data = event.model_dump(by_alias=True)
         return json.dumps(_slim_response(data), indent=2, default=str)
@@ -140,6 +133,7 @@ def patch_event(
     location: Annotated[str | None, Field(description="New event location")] = None,
     attendees: Annotated[str | list | None, Field(description="New attendees as JSON array of email strings or attendee objects")] = None,
     time_zone: Annotated[str | None, Field(description="Time zone (e.g. 'America/Denver')")] = None,
+    recurrence: Annotated[str | list | None, Field(description="Recurrence rules as JSON array of RRULE strings, e.g. [\"RRULE:FREQ=WEEKLY;COUNT=10\"]")] = None,
 ) -> str:
     """Partial update (PATCH) of an event -- only updates specified fields.
 
@@ -148,6 +142,7 @@ def patch_event(
     try:
         client = get_client()
         parsed_attendees = _parse_json(attendees, "attendees") if attendees is not None else None
+        parsed_recurrence = _parse_json(recurrence, "recurrence") if recurrence is not None else None
         event = client.events.patch(
             calendar_id,
             event_id,
@@ -158,6 +153,7 @@ def patch_event(
             end=_parse_datetime(end),
             attendees=parsed_attendees,
             time_zone=time_zone,
+            recurrence=parsed_recurrence,
         )
         data = event.model_dump(by_alias=True)
         return json.dumps(_slim_response(data), indent=2, default=str)
