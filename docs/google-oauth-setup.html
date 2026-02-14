@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Google OAuth 2.0 Setup Guide — calendar-mcp</title>
+  <title>Google OAuth 2.0 Setup Guide — gcal-mcp</title>
   <style>
     /* ── Reset & base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; }
@@ -120,7 +120,7 @@
   </style>
   <script>
     (function () {
-      var stored = localStorage.getItem('calendar-mcp-dark-mode');
+      var stored = localStorage.getItem('gcal-mcp-dark-mode');
       var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (stored === 'dark' || (!stored && prefersDark)) {
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -271,7 +271,7 @@ devopsphilosopher@gmail.com</code></pre>
       <thead><tr><th>Field</th><th>Value</th></tr></thead>
       <tbody>
         <tr><td><strong>Application type</strong></td><td><strong>Desktop app</strong></td></tr>
-        <tr><td><strong>Name</strong></td><td><code>calendar-mcp</code> (or any descriptive name)</td></tr>
+        <tr><td><strong>Name</strong></td><td><code>gcal-mcp</code> (or any descriptive name)</td></tr>
       </tbody>
     </table>
     <p>Click <strong>Create</strong>.</p>
@@ -394,7 +394,7 @@ chmod 600 ~/secrets/google-oauth/credentials.json</code></pre>
       <li>Exchange the code for tokens.</li>
       <li>Save the token file to <code>~/secrets/google-oauth/token.json</code> (chmod 600).</li>
     </ol>
-    <p>The script requests the Google Calendar scope needed for calendar-mcp.</p>
+    <p>The script requests the Google Calendar scope needed for gcal-mcp.</p>
 
     <h3>What gets saved</h3>
     <p>The token file (<code>~/secrets/google-oauth/token.json</code>) contains:</p>
@@ -493,7 +493,7 @@ chmod 600 ~/secrets/google-oauth/token.json</code></pre>
     <table>
       <thead><tr><th>Scope</th><th>Access Level</th><th>Used By</th></tr></thead>
       <tbody>
-        <tr><td><code>https://www.googleapis.com/auth/calendar</code></td><td>Full read/write access to Calendar</td><td>calendar-mcp</td></tr>
+        <tr><td><code>https://www.googleapis.com/auth/calendar</code></td><td>Full read/write access to Calendar</td><td>gcal-mcp</td></tr>
         <tr><td><code>https://www.googleapis.com/auth/calendar.readonly</code></td><td>Read-only access to Calendar</td><td>Not used (we need write)</td></tr>
         <tr><td><code>https://www.googleapis.com/auth/calendar.events</code></td><td>Read/write access to events only</td><td>Not used (calendar scope covers this)</td></tr>
       </tbody>
@@ -501,20 +501,20 @@ chmod 600 ~/secrets/google-oauth/token.json</code></pre>
 
     <h3>Why this scope?</h3>
     <ul>
-      <li><strong><code>calendar</code></strong> (full access): The calendar-mcp server needs to create, read, update, and delete events. The full <code>calendar</code> scope is the simplest way to enable all CRUD operations.</li>
+      <li><strong><code>calendar</code></strong> (full access): The gcal-mcp server needs to create, read, update, and delete events. The full <code>calendar</code> scope is the simplest way to enable all CRUD operations.</li>
     </ul>
 
     <h3>Adding more scopes later</h3>
     <p>If you later need to add more scopes (e.g., for Gmail), you must re-authorize: delete <code>token.json</code>, add the new scope to the script, and run it again. Google does not support incremental scope addition for Desktop app credentials through the standard library flow.</p>
 
     <div class="footer">
-      <p><a href="index.html">&larr; Back to docs</a> &middot; <a href="https://github.com/ldraney/calendar-mcp">GitHub</a></p>
+      <p><a href="index.html">&larr; Back to docs</a> &middot; <a href="https://github.com/ldraney/gcal-mcp">GitHub</a></p>
     </div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var STORAGE_KEY = 'calendar-mcp-dark-mode';
+      var STORAGE_KEY = 'gcal-mcp-dark-mode';
       var html = document.documentElement;
       var MOON = '\u{1F319}';
       var SUN  = '\u2600\uFE0F';

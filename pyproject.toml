@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "calendar-mcp"
+name = "gcal-mcp"
 version = "0.1.0"
 description = "MCP server wrapping gcal-sdk for Google Calendar access"
 readme = "README.md"
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-calendar-mcp = "calendar_mcp.server:main"
+gcal-mcp = "gcal_mcp.server:main"
 
 [project.optional-dependencies]
 dev = [
