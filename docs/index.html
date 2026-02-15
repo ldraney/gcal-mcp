@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>calendar-mcp — Documentation</title>
+  <title>gcal-mcp — Documentation</title>
   <style>
     /* ── Reset & base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; }
@@ -75,7 +75,7 @@
   <script>
     // Apply dark mode before paint to prevent flash
     (function () {
-      var stored = localStorage.getItem('calendar-mcp-dark-mode');
+      var stored = localStorage.getItem('gcal-mcp-dark-mode');
       var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (stored === 'dark' || (!stored && prefersDark)) {
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -85,7 +85,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>calendar-mcp</h1>
+    <h1>gcal-mcp</h1>
     <p>Google Calendar MCP server — documentation and setup guides.</p>
 
     <h2>Guides</h2>
@@ -94,16 +94,16 @@
     </ul>
 
     <h2>Source</h2>
-    <p>View the project on <a href="https://github.com/ldraney/calendar-mcp">GitHub</a>.</p>
+    <p>View the project on <a href="https://github.com/ldraney/gcal-mcp">GitHub</a>.</p>
 
     <div class="footer">
-      <p>calendar-mcp docs &middot; <a href="https://github.com/ldraney/calendar-mcp">GitHub</a></p>
+      <p>gcal-mcp docs &middot; <a href="https://github.com/ldraney/gcal-mcp">GitHub</a></p>
     </div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var STORAGE_KEY = 'calendar-mcp-dark-mode';
+      var STORAGE_KEY = 'gcal-mcp-dark-mode';
       var html = document.documentElement;
       var MOON = '\u{1F319}';
       var SUN  = '\u2600\uFE0F';

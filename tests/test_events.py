@@ -49,7 +49,7 @@ def _make_mock_event(**overrides):
 
 class TestListEvents:
     def test_list_events_default(self, mock_client):
-        from calendar_mcp.tools.events import list_events
+        from gcal_mcp.tools.events import list_events
 
         mock_client.events.list.return_value = [_make_mock_event()]
         result = list_events()
@@ -70,7 +70,7 @@ class TestListEvents:
         )
 
     def test_list_events_with_time_range(self, mock_client):
-        from calendar_mcp.tools.events import list_events
+        from gcal_mcp.tools.events import list_events
 
         mock_client.events.list.return_value = []
         result = list_events(
@@ -86,7 +86,7 @@ class TestListEvents:
         assert call_kwargs.kwargs["time_max"] == datetime(2024, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
 
     def test_list_events_with_search(self, mock_client):
-        from calendar_mcp.tools.events import list_events
+        from gcal_mcp.tools.events import list_events
 
         mock_client.events.list.return_value = [_make_mock_event(summary="Meeting")]
         result = list_events(q="meeting")
@@ -112,7 +112,7 @@ class TestListEvents:
 
 class TestGetEvent:
     def test_get_event(self, mock_client):
-        from calendar_mcp.tools.events import get_event
+        from gcal_mcp.tools.events import get_event
 
         mock_client.events.get.return_value = _make_mock_event()
         result = get_event("primary", "event-1")
@@ -128,7 +128,7 @@ class TestGetEvent:
 
 class TestCreateEvent:
     def test_create_event_basic(self, mock_client):
-        from calendar_mcp.tools.events import create_event
+        from gcal_mcp.tools.events import create_event
 
         mock_client.events.create.return_value = _make_mock_event(id="new-event")
         result = create_event(
@@ -145,7 +145,7 @@ class TestCreateEvent:
         assert call_kwargs.kwargs["end"] == datetime(2024, 6, 15, 11, 0, tzinfo=timezone.utc)
 
     def test_create_event_with_attendees_json(self, mock_client):
-        from calendar_mcp.tools.events import create_event
+        from gcal_mcp.tools.events import create_event
 
         mock_client.events.create.return_value = _make_mock_event()
         result = create_event(
@@ -160,7 +160,7 @@ class TestCreateEvent:
         assert call_kwargs["attendees"] == ["alice@example.com", "bob@example.com"]
 
     def test_create_event_with_attendees_list(self, mock_client):
-        from calendar_mcp.tools.events import create_event
+        from gcal_mcp.tools.events import create_event
 
         mock_client.events.create.return_value = _make_mock_event()
         result = create_event(
@@ -175,7 +175,7 @@ class TestCreateEvent:
         assert call_kwargs["attendees"] == ["alice@example.com", "bob@example.com"]
 
     def test_create_event_with_all_fields(self, mock_client):
-        from calendar_mcp.tools.events import create_event
+        from gcal_mcp.tools.events import create_event
 
         mock_client.events.create.return_value = _make_mock_event()
         result = create_event(
@@ -203,7 +203,7 @@ class TestCreateEvent:
 
 class TestUpdateEvent:
     def test_update_event(self, mock_client):
-        from calendar_mcp.tools.events import update_event
+        from gcal_mcp.tools.events import update_event
 
         mock_client.events.update.return_value = _make_mock_event(summary="Updated")
         body = json.dumps({"summary": "Updated", "start": {"dateTime": "2024-06-15T10:00:00Z"}})
@@ -216,7 +216,7 @@ class TestUpdateEvent:
         )
 
     def test_update_event_dict_body(self, mock_client):
-        from calendar_mcp.tools.events import update_event
+        from gcal_mcp.tools.events import update_event
 
         mock_client.events.update.return_value = _make_mock_event(summary="Updated")
         body = {"summary": "Updated"}
@@ -235,7 +235,7 @@ class TestUpdateEvent:
 
 class TestPatchEvent:
     def test_patch_event_summary(self, mock_client):
-        from calendar_mcp.tools.events import patch_event
+        from gcal_mcp.tools.events import patch_event
 
         mock_client.events.patch.return_value = _make_mock_event(summary="Patched")
         result = patch_event("primary", "event-1", summary="Patched")
@@ -245,7 +245,7 @@ class TestPatchEvent:
         assert call_kwargs["summary"] == "Patched"
 
     def test_patch_event_time(self, mock_client):
-        from calendar_mcp.tools.events import patch_event
+        from gcal_mcp.tools.events import patch_event
 
         mock_client.events.patch.return_value = _make_mock_event()
         result = patch_event(
@@ -267,7 +267,7 @@ class TestPatchEvent:
 
 class TestDeleteEvent:
     def test_delete_event(self, mock_client):
-        from calendar_mcp.tools.events import delete_event
+        from gcal_mcp.tools.events import delete_event
 
         mock_client.events.delete.return_value = None
         result = delete_event("primary", "event-1")
@@ -279,7 +279,7 @@ class TestDeleteEvent:
         )
 
     def test_delete_event_with_notifications(self, mock_client):
-        from calendar_mcp.tools.events import delete_event
+        from gcal_mcp.tools.events import delete_event
 
         mock_client.events.delete.return_value = None
         result = delete_event("primary", "event-1", send_updates="all")
@@ -297,7 +297,7 @@ class TestDeleteEvent:
 
 class TestMoveEvent:
     def test_move_event(self, mock_client):
-        from calendar_mcp.tools.events import move_event
+        from gcal_mcp.tools.events import move_event
 
         mock_client.events.move.return_value = _make_mock_event()
         result = move_event("primary", "event-1", "other-calendar")
@@ -315,7 +315,7 @@ class TestMoveEvent:
 
 class TestListEventInstances:
     def test_list_instances(self, mock_client):
-        from calendar_mcp.tools.events import list_event_instances
+        from gcal_mcp.tools.events import list_event_instances
 
         mock_client.events.instances.return_value = [
             _make_mock_event(id="instance-1"),
@@ -333,7 +333,7 @@ class TestListEventInstances:
         )
 
     def test_list_instances_with_time_range(self, mock_client):
-        from calendar_mcp.tools.events import list_event_instances
+        from gcal_mcp.tools.events import list_event_instances
 
         mock_client.events.instances.return_value = []
         result = list_event_instances(
@@ -356,7 +356,7 @@ class TestListEventInstances:
 
 class TestEventErrorHandling:
     def test_sdk_exception(self, mock_client):
-        from calendar_mcp.tools.events import get_event
+        from gcal_mcp.tools.events import get_event
 
         mock_client.events.get.side_effect = RuntimeError("Connection failed")
         result = get_event("primary", "event-1")
@@ -365,7 +365,7 @@ class TestEventErrorHandling:
         assert "Connection failed" in parsed["message"]
 
     def test_invalid_json_attendees(self, mock_client):
-        from calendar_mcp.tools.events import create_event
+        from gcal_mcp.tools.events import create_event
 
         result = create_event(
             summary="Bad",

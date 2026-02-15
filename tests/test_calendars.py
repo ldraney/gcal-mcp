@@ -37,7 +37,7 @@ def _make_mock_calendar(**overrides):
 
 class TestListCalendars:
     def test_list_calendars_default(self, mock_client):
-        from calendar_mcp.tools.calendars import list_calendars
+        from gcal_mcp.tools.calendars import list_calendars
 
         mock_client.calendars.list.return_value = [_make_mock_calendar()]
         result = list_calendars()
@@ -52,7 +52,7 @@ class TestListCalendars:
         )
 
     def test_list_calendars_with_options(self, mock_client):
-        from calendar_mcp.tools.calendars import list_calendars
+        from gcal_mcp.tools.calendars import list_calendars
 
         mock_client.calendars.list.return_value = []
         result = list_calendars(show_deleted=True, show_hidden=True, max_results=50)
@@ -72,7 +72,7 @@ class TestListCalendars:
 
 class TestGetCalendar:
     def test_get_calendar(self, mock_client):
-        from calendar_mcp.tools.calendars import get_calendar
+        from gcal_mcp.tools.calendars import get_calendar
 
         mock_client.calendars.get.return_value = _make_mock_calendar()
         result = get_calendar("primary")
@@ -81,7 +81,7 @@ class TestGetCalendar:
         mock_client.calendars.get.assert_called_once_with("primary")
 
     def test_get_calendar_default(self, mock_client):
-        from calendar_mcp.tools.calendars import get_calendar
+        from gcal_mcp.tools.calendars import get_calendar
 
         mock_client.calendars.get.return_value = _make_mock_calendar()
         result = get_calendar()
@@ -97,7 +97,7 @@ class TestGetCalendar:
 
 class TestCreateCalendar:
     def test_create_calendar_basic(self, mock_client):
-        from calendar_mcp.tools.calendars import create_calendar
+        from gcal_mcp.tools.calendars import create_calendar
 
         mock_client.calendars.create.return_value = _make_mock_calendar(
             id="new-cal", summary="Work"
@@ -114,7 +114,7 @@ class TestCreateCalendar:
         )
 
     def test_create_calendar_full(self, mock_client):
-        from calendar_mcp.tools.calendars import create_calendar
+        from gcal_mcp.tools.calendars import create_calendar
 
         mock_client.calendars.create.return_value = _make_mock_calendar(id="new-cal")
         result = create_calendar(
@@ -140,7 +140,7 @@ class TestCreateCalendar:
 
 class TestDeleteCalendar:
     def test_delete_calendar(self, mock_client):
-        from calendar_mcp.tools.calendars import delete_calendar
+        from gcal_mcp.tools.calendars import delete_calendar
 
         mock_client.calendars.delete.return_value = None
         result = delete_calendar("cal-to-delete")
@@ -157,7 +157,7 @@ class TestDeleteCalendar:
 
 class TestClearCalendar:
     def test_clear_calendar(self, mock_client):
-        from calendar_mcp.tools.calendars import clear_calendar
+        from gcal_mcp.tools.calendars import clear_calendar
 
         mock_client.calendars.clear.return_value = None
         result = clear_calendar("primary")
@@ -167,7 +167,7 @@ class TestClearCalendar:
         mock_client.calendars.clear.assert_called_once_with("primary")
 
     def test_clear_calendar_default(self, mock_client):
-        from calendar_mcp.tools.calendars import clear_calendar
+        from gcal_mcp.tools.calendars import clear_calendar
 
         mock_client.calendars.clear.return_value = None
         result = clear_calendar()
@@ -183,7 +183,7 @@ class TestClearCalendar:
 
 class TestCalendarErrorHandling:
     def test_sdk_exception(self, mock_client):
-        from calendar_mcp.tools.calendars import get_calendar
+        from gcal_mcp.tools.calendars import get_calendar
 
         mock_client.calendars.get.side_effect = RuntimeError("Auth expired")
         result = get_calendar("primary")

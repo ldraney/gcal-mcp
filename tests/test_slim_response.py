@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from calendar_mcp.server import _slim_response
+from gcal_mcp.server import _slim_response
 
 
 class TestAlwaysStrippedKeys:

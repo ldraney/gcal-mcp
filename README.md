@@ -1,19 +1,19 @@
-# calendar-mcp
+# gcal-mcp
 
 MCP server for Google Calendar, built on [gcal-sdk](https://github.com/ldraney/gcal-sdk).
 
 ## Install
 
 ```bash
-pip install calendar-mcp
+pip install gcal-mcp
 ```
 
 ## Run
 
 ```bash
-calendar-mcp
+gcal-mcp
 # or
-python -m calendar_mcp
+python -m gcal_mcp
 ```
 
 ## Claude Code config
@@ -24,7 +24,7 @@ Add to your `.mcp.json`:
 {
   "mcpServers": {
     "calendar": {
-      "command": "calendar-mcp"
+      "command": "gcal-mcp"
     }
   }
 }

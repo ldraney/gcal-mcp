@@ -18,7 +18,7 @@ from gcal_sdk.models import FreeBusyResponse, CalendarFreeBusy, BusyPeriod
 
 class TestQueryFreeBusy:
     def test_query_freebusy_basic(self, mock_client):
-        from calendar_mcp.tools.freebusy import query_freebusy
+        from gcal_mcp.tools.freebusy import query_freebusy
 
         mock_response = FreeBusyResponse(
             kind="calendar#freeBusy",
@@ -53,7 +53,7 @@ class TestQueryFreeBusy:
         )
 
     def test_query_freebusy_list_input(self, mock_client):
-        from calendar_mcp.tools.freebusy import query_freebusy
+        from gcal_mcp.tools.freebusy import query_freebusy
 
         mock_response = FreeBusyResponse(
             calendars={
@@ -75,7 +75,7 @@ class TestQueryFreeBusy:
         assert call_kwargs["time_zone"] == "America/Denver"
 
     def test_query_freebusy_error(self, mock_client):
-        from calendar_mcp.tools.freebusy import query_freebusy
+        from gcal_mcp.tools.freebusy import query_freebusy
 
         mock_client.freebusy.query.side_effect = RuntimeError("API error")
         result = query_freebusy(
@@ -88,7 +88,7 @@ class TestQueryFreeBusy:
         assert "API error" in parsed["message"]
 
     def test_query_freebusy_invalid_json(self, mock_client):
-        from calendar_mcp.tools.freebusy import query_freebusy
+        from gcal_mcp.tools.freebusy import query_freebusy
 
         result = query_freebusy(
             calendar_ids="{bad json[",
