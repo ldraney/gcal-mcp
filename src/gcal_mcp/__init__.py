@@ -1,4 +1,4 @@
-"""gcal-mcp: MCP server wrapping gcal-sdk for Google Calendar access."""
+"""gcal-mcp-ldraney: MCP server wrapping gcal-sdk for Google Calendar access."""
 
 from .server import mcp
 
