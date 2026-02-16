@@ -9,10 +9,25 @@ description = "MCP server wrapping gcal-sdk for Google Calendar access"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
+authors = [{name = "Lucas Draney"}]
+keywords = ["google-calendar", "mcp", "claude", "ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+]
 dependencies = [
     "mcp>=1.0",
     "gcal-sdk-ldraney>=0.1.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/ldraney/gcal-mcp"
+Issues = "https://github.com/ldraney/gcal-mcp/issues"
 
 [project.scripts]
 gcal-mcp = "gcal_mcp.server:main"

@@ -1,3 +1,7 @@
+[![PyPI](https://img.shields.io/pypi/v/gcal-mcp-ldraney)](https://pypi.org/project/gcal-mcp-ldraney/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 # gcal-mcp
 
 MCP server for Google Calendar, built on [gcal-sdk](https://github.com/ldraney/gcal-sdk).
